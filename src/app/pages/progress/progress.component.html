@@ -10,20 +10,20 @@
             <h4 class="card-title">Striped Progress bar</h4>
             <div class="progress m-t-20">
               <div class="progress-bar bg-primary progress-bar-striped active"
-                   style="height:10px;"
+                   style="height:15px;"
                    [style.width]="getProgreso1"
                    role="progressbar">
-                   <span class="sr-only">85% Complete (success)</span>
+                   <span>{{ getProgreso1 }} Completado</span>
               </div>
             </div>
 
             <!-- Progress bar -->
             <div class="progress m-t-20">
               <div class="progress-bar bg-info progress-bar-striped active"
-                   style="height:10px;"
+                   style="height:15px;"
                    [style.width]="getProgreso2"
                    role="progressbar">
-                   <span class="sr-only">85% Complete (success)</span>
+                   <span>{{ getProgreso2 }} Completado</span>
               </div>
             </div>
 
@@ -37,7 +37,9 @@
     <div class="card">
       <div class="card-body">
 
-        <app-incrementador (valorEmitido)="progreso1 = $event" [valorInput]="progreso1"></app-incrementador>
+        <app-incrementador (valorEmitido)="progreso1 = $event"
+                           [valorInput]="progreso1"
+                           [btnClass]="'btn-primary'"></app-incrementador>
 
       </div>
     </div>
@@ -47,7 +49,9 @@
     <div class="card">
       <div class="card-body">
 
-        <app-incrementador (valorEmitido)="progreso2 = $event" [valorInput]="progreso2"></app-incrementador>
+        <app-incrementador (valorEmitido)="progreso2 = $event"
+                           [valorInput]="progreso2"
+                           [btnClass]="'btn-info'"></app-incrementador>
 
       </div>
     </div>
