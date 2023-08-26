@@ -6,6 +6,8 @@ import { ProgressComponent } from './progress/progress.component';
 import { PagesComponent } from './pages.component';
 import { NopagefoundComponent } from '../nopagefound/nopagefound.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
+import { PromesasComponent } from './promesas/promesas.component';
+import { RxjsComponent } from './rxjs/rxjs.component';
 
 const routes: Routes = [
   {
@@ -16,6 +18,8 @@ const routes: Routes = [
       { path: 'grafica1', component: Grafica1Component },
       { path: 'progress', component: ProgressComponent },
       { path: 'account-settings', component: AccountSettingsComponent },
+      { path: 'promesas', component: PromesasComponent },
+      { path: 'rxjs', component: RxjsComponent },
     ]
   },
   //{ path: 'path/:routeParam', component: MyComponent },
