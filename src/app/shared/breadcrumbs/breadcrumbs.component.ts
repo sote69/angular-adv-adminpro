@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { ActivationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { Subscription, filter, map } from 'rxjs';
 
 @Component({
   selector: 'app-breadcrumbs',
@@ -8,22 +8,31 @@ import { filter, map } from 'rxjs';
   styles: [
   ]
 })
-export class BreadcrumbsComponent {
+export class BreadcrumbsComponent implements OnDestroy {
 
   private router = inject(Router);
   public titulo :string = '';
+  public tituloSubs$ :Subscription;
 
   constructor() {
-    // Obtenemos la data configurada en el pages-routing.module
-    this.router.events
+    this.tituloSubs$ = this.getRouteData()
+                            .subscribe((data) => {
+                              this.titulo = data['titulo']; // Titulo de la página
+                              document.title = `AdminPro - ${this.titulo}`;
+                            });
+  }
+
+  getRouteData() {
+    // Obtenemos la data configurada en el pages-routing.module para mostrar el nombre de la página en el breadcrumb
+    return this.router.events
                .pipe(
                   filter((event): event is ActivationEnd => event instanceof ActivationEnd),
                   filter((event:ActivationEnd) => event.snapshot.firstChild === null ),
                   map((event:ActivationEnd) => event.snapshot.data)
-               )
-               .subscribe((data) => {
-                  this.titulo = data['titulo']; // Titulo de la página
-                  document.title = `AdminPro - ${this.titulo}`;
-                });
+                );
+  }
+
+  ngOnDestroy(): void {
+    this.tituloSubs$.unsubscribe();
   }
 }
