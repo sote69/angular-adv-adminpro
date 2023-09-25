@@ -3,9 +3,6 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { UsuarioService } from 'src/app/services/usuario.service';
-import { environment } from 'src/environments/environment';
-
-declare const google :any;
 
 @Component({
   selector: 'app-login',
@@ -25,40 +22,19 @@ export class LoginComponent implements AfterViewInit {
   public loginForm = this.fb.group({
     email:     [localStorage.getItem('email') || '', [ Validators.required, Validators.email ]],
     password:  ['', [ Validators.required ]],
-    remember:  [false],
+    remember:  [true],
   });
 
   ngAfterViewInit(): void {
     this.googleInit();
   }
 
-  googleInit() {
-    google.accounts.id.initialize({
-      client_id: environment.client_id,
-      callback: (googleResponse :any) => this.handleCredentialResponse(googleResponse)
-    });
-    google.accounts.id.renderButton(
-
+  async googleInit() {
+    await this.usuarioService.googleInit();
+    this.usuarioService.googleApi.accounts.id.renderButton(
       this.googleBtn.nativeElement,
       { theme: "outline", size: "large" }  // * customization attributes
     );
-  }
-
-  handleCredentialResponse(response :any) {
-
-    console.log("Encoded JWT ID token: " + response.credential);
-    this.usuarioService.loginGoogle(response.credential)
-      .subscribe({
-        next: (resp) => {
-
-          // * Navegar al dashboard
-          this.router.navigateByUrl('/');
-        },
-        error: (err) => {
-          Swal.fire('Error', err.error.msg, 'error');
-        },
-        complete: () => {}
-      });
   }
 
   login() {

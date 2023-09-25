@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { UsuarioService } from 'src/app/services/usuario.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -13,6 +14,7 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 export class RegisterComponent {
 
   private usuarioService = inject(UsuarioService);
+  private router = inject(Router);
   private formSubmited = false;
   private fb = inject(FormBuilder);
   public registerForm = this.fb.group({
@@ -34,14 +36,14 @@ export class RegisterComponent {
 
       this.usuarioService.crearUsuario(this.registerForm.value)
         .subscribe({
-          next(resp) {
+          next: (resp) => {
             console.log(resp);
           },
-          error(err) {
+          error: (err) => {
             console.warn(err.error);
             Swal.fire('Error', err.error.msg, 'error');
           },
-          complete() {}
+          complete: () => {}
         });
     }
     else {

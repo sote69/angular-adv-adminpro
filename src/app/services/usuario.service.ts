@@ -1,18 +1,24 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, NgZone } from '@angular/core';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { environment } from 'src/environments/environment';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
-import { Usuario } from '../models/usuario.model';
 import { LoginForm } from '../interfaces/login-form.interface';
+
+declare const google :any;
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
 
+  public googleApi :any;
+  private ngZone = inject(NgZone);
   private httpClient = inject(HttpClient);
+  private router = inject(Router);
   private base_url = environment.base_url;
 
   public crearUsuario( formData :RegisterForm ) {
@@ -31,6 +37,36 @@ export class UsuarioService {
           localStorage.setItem('token', resp.token);
         })
       );
+  }
+
+  public googleInit() {
+
+    return new Promise((resolve) => {
+      google.accounts.id.initialize({
+        client_id: environment.client_id,
+        callback: (googleResponse :any) => this.handleCredentialResponse(googleResponse)
+      });
+      this.googleApi = google;
+      resolve(true);
+    });
+  }
+
+  handleCredentialResponse(response :any) {
+
+    this.loginGoogle(response.credential)
+      .subscribe({
+        next: (resp) => {
+
+          // * Navegar al dashboard
+          this.ngZone.run(()=>{
+            this.router.navigateByUrl('/');
+          });
+        },
+        error: (err) => {
+          Swal.fire('Error', err.error.msg, 'error');
+        },
+        complete: () => {}
+      });
   }
 
   public loginGoogle( token :string ) {
@@ -60,5 +96,14 @@ export class UsuarioService {
           return of(false);
         })
       );
+  }
+
+  public logOut() {
+    localStorage.removeItem('token');
+    google.accounts.id.revoke('fernandezsotelo@gmail.com', () => {
+      this.ngZone.run(() => {
+        this.router.navigateByUrl('/login');
+      })
+    });
   }
 }
