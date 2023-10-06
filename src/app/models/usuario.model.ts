@@ -1,15 +1,42 @@
+import { environment } from "src/environments/environment";
+
+const baseUrl = environment.base_url;
 
 export class Usuario {
 
-  constructor(nombre :String,
-              email :String ,
-              img :String,
-              uid? :String,
-              rol? :String,
-              google? :boolean,
-  )
-  {
+  nombre :string;
+  email :string ;
+  img :string;
+  uid? :string;
+  rol? :string;
+  google? :boolean;
 
+  constructor(nombre :string,
+              email :string ,
+              img :string,
+              uid? :string,
+              rol? :string,
+              google? :boolean)
+  {
+    this.nombre = nombre;
+    this.email  = email;
+    this.img    = img;
+    this.uid    = uid;
+    this.rol    = rol;
+    this.google = google;
   }
 
+  get imagenUrl() :string {
+
+    if (this.img) {
+
+      if (this.img.includes('https')) {
+        return this.img;
+      } else {
+        return `${baseUrl}/uploads/usuarios/${this.img}`;
+      }
+    } else {
+      return `${baseUrl}/uploads/usuarios/no-img`;
+    }
+  }
 };

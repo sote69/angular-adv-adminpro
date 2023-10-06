@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { Usuario } from 'src/app/models/usuario.model';
 import { UsuarioService } from 'src/app/services/usuario.service';
 
 @Component({
@@ -10,6 +11,7 @@ import { UsuarioService } from 'src/app/services/usuario.service';
 export class HeaderComponent {
 
   private usuarioService = inject(UsuarioService);
+  public usuario = computed<Usuario>(() => this.usuarioService.usuario()!);
 
   logOut() {
     this.usuarioService.logOut();

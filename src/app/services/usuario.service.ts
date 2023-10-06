@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, NgZone } from '@angular/core';
+import { Injectable, inject, NgZone, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { RegisterForm } from '../interfaces/register-form.interface';
@@ -7,6 +7,8 @@ import { environment } from 'src/environments/environment';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { LoginForm } from '../interfaces/login-form.interface';
+import { Usuario } from '../models/usuario.model';
+import { PerfilForm } from '../interfaces/perfil-form.interfaces';
 
 declare const google :any;
 
@@ -20,6 +22,19 @@ export class UsuarioService {
   private httpClient = inject(HttpClient);
   private router = inject(Router);
   private base_url = environment.base_url;
+  public usuario = signal<Usuario | undefined>(undefined);
+
+  get token() :string {
+    return localStorage.getItem('token') || '';
+  }
+
+  get uid() :string {
+    return this.usuario()?.uid || '';
+  }
+
+  get rol() :string {
+    return this.usuario()?.rol || '';
+  }
 
   public crearUsuario( formData :RegisterForm ) {
     return this.httpClient.post(`${this.base_url}/usuarios`, formData)
@@ -28,6 +43,18 @@ export class UsuarioService {
         localStorage.setItem('token', resp.token);
       })
     );
+  }
+
+  public actualizarUsuario( formData: { email :string, nombre :string, role :string } ) {
+    formData = { ...formData, role: this.rol };
+    return this.httpClient.put(`${this.base_url}/usuarios/${this.uid}`, formData, { headers: { "Authorization": `Bearer ${ this.token }` } })
+    .pipe(
+      tap( (resp :any) => {
+        console.log(resp);
+        this.usuario()!.nombre = formData.nombre;
+        this.usuario()!.email = formData.email;
+      })
+    )
   }
 
   public loginUsuario( formData :LoginForm ) {
@@ -57,7 +84,7 @@ export class UsuarioService {
       .subscribe({
         next: (resp) => {
 
-          // * Navegar al dashboard
+          // * Navegar al dashboard, se usa el ngZone por hacer la navegación fuera del ámbito de angular
           this.ngZone.run(()=>{
             this.router.navigateByUrl('/');
           });
@@ -79,16 +106,14 @@ export class UsuarioService {
   }
 
   public validarToken() :Observable<boolean> {
-    const token = localStorage.getItem('token') || '';
 
-    return this.httpClient.get(`${this.base_url}/login/renew`, { headers: { "Authorization": `Bearer ${ token }` } })
+    return this.httpClient.get(`${this.base_url}/login/renew`, { headers: { "Authorization": `Bearer ${ this.token }` } })
       .pipe(
         // * Guardamos el nuevo token
-        tap( (resp :any) => {
-          localStorage.setItem('token', resp.token);
-        }),
-        // * Si fue bien la validación del token regresamos true
         map( (resp :any) => {
+          const { nombre, email, img, uid, rol, google } = resp.usuario;
+          this.usuario.set(new Usuario(nombre, email, img, uid, rol, google));
+          localStorage.setItem('token', resp.token);
           return true;
         }),
         catchError((error) => {
@@ -100,10 +125,15 @@ export class UsuarioService {
 
   public logOut() {
     localStorage.removeItem('token');
-    google.accounts.id.revoke('fernandezsotelo@gmail.com', () => {
-      this.ngZone.run(() => {
-        this.router.navigateByUrl('/login');
-      })
-    });
+
+    if (this.usuario()?.google) {
+      google.accounts.id.revoke(this.usuario()?.email, () => {
+        this.ngZone.run(() => {
+          this.router.navigateByUrl('/login');
+        })
+      });
+    } else {
+      this.router.navigateByUrl('/login');
+    }
   }
 }

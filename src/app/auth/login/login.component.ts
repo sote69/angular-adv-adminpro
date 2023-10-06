@@ -18,7 +18,6 @@ export class LoginComponent implements AfterViewInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private usuarioService = inject(UsuarioService);
-  private formSubmited = false;
   public loginForm = this.fb.group({
     email:     [localStorage.getItem('email') || '', [ Validators.required, Validators.email ]],
     password:  ['', [ Validators.required ]],
