@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { RegisterForm } from '../interfaces/register-form.interface';
 import { environment } from 'src/environments/environment';
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, catchError, map, tap, of, delay } from 'rxjs';
 import { LoginForm } from '../interfaces/login-form.interface';
 import { Usuario } from '../models/usuario.model';
 import { PerfilForm } from '../interfaces/perfil-form.interfaces';
+import { CargarUsuario } from '../interfaces/cargar-usuarios.interface';
 
 declare const google :any;
 
@@ -36,6 +36,10 @@ export class UsuarioService {
     return this.usuario()?.rol || '';
   }
 
+  get headers() {
+    return { headers: { "Authorization": `Bearer ${ this.token }` } };
+  }
+
   public crearUsuario( formData :RegisterForm ) {
     return this.httpClient.post(`${this.base_url}/usuarios`, formData)
     .pipe(
@@ -47,7 +51,7 @@ export class UsuarioService {
 
   public actualizarUsuario( formData: { email :string, nombre :string, role :string } ) {
     formData = { ...formData, role: this.rol };
-    return this.httpClient.put(`${this.base_url}/usuarios/${this.uid}`, formData, { headers: { "Authorization": `Bearer ${ this.token }` } })
+    return this.httpClient.put(`${this.base_url}/usuarios/${this.uid}`, formData, this.headers)
     .pipe(
       tap( (resp :any) => {
         console.log(resp);
@@ -107,7 +111,7 @@ export class UsuarioService {
 
   public validarToken() :Observable<boolean> {
 
-    return this.httpClient.get(`${this.base_url}/login/renew`, { headers: { "Authorization": `Bearer ${ this.token }` } })
+    return this.httpClient.get(`${this.base_url}/login/renew`, this.headers)
       .pipe(
         // * Guardamos el nuevo token
         map( (resp :any) => {
@@ -135,5 +139,19 @@ export class UsuarioService {
     } else {
       this.router.navigateByUrl('/login');
     }
+  }
+
+  public cargarUsuarios( desde :number = 0, numRegistros :number = 5 ) {
+
+    return this.httpClient.get<CargarUsuario>(`${this.base_url}/usuarios?desde=${ desde }&numreg=${ numRegistros }`, this.headers)
+      .pipe(
+        delay(150),
+        map( resp => {
+          const usuarios = resp.usuarios.map(
+            user => new Usuario(user.nombre, user.email, user.img, user.uid, user.rol, user.google)
+          );
+          return { total: resp.total, usuarios };
+        })
+      )
   }
 }
