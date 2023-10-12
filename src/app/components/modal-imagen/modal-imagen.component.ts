@@ -28,7 +28,6 @@ export class ModalImagenComponent {
   cerrarModal() {
     this.imgTemp = null;
     this.imgSeleccionada = null;
-    this.imagenASubir = undefined;
     this.modalImagenService.cerrarModal();
   }
 
