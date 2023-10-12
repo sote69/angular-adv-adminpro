@@ -27,7 +27,7 @@ export class PerfilComponent implements OnInit {
   }
 
   actualizarPerfil() {
-    this.usuarioService.actualizarUsuario(this.perfilForm.value)
+    this.usuarioService.actualizarPerfil(this.perfilForm.value)
       .subscribe({
         next: (resp) => {
           Swal.fire('Guardado', 'Los cambios han sido grabados correctamente', 'success');

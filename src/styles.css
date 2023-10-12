@@ -30,3 +30,21 @@
 .w-100 {
   width: 100px !important;
 }
+
+.w-140 {
+  width: 140px !important;
+}
+
+.fondo-modal-imagen {
+  background-color: rgb(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0px;
+  height: 100%;
+  left: 0px;
+  width: 100%;
+  z-index: 9999;
+}
+
+.oculto {
+  display: none;
+}

@@ -20,7 +20,7 @@ export class Usuario {
   {
     this.nombre = nombre;
     this.email  = email;
-    this.img    = img;
+    this.img    = (!img || img === '') ? 'no-img' : img;
     this.uid    = uid;
     this.rol    = rol;
     this.google = google;
