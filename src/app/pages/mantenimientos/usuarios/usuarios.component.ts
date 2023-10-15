@@ -73,8 +73,8 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     this.usuarioService.cargarUsuarios(this.desde, this.registosPagina)
       .subscribe({
         next: (resp) => {
-          this.usuarios = resp.usuarios;
-          this.usuariosTemp = resp.usuarios;
+          this.usuarios = [...resp.usuarios];
+          this.usuariosTemp = [...resp.usuarios];
           this.totalUsuarios = resp.total;
           this.totalUsuariosTemp = resp.total;
           this.calcularHasta();
@@ -87,7 +87,13 @@ export class UsuariosComponent implements OnInit, OnDestroy {
   }
 
   calcularHasta() {
+
+    if (this.desde >= this.totalUsuarios) {
+      this.desde -= this.registosPagina;
+    }
+
     this.hasta = this.desde + this.registosPagina;
+
     if ( this.hasta < 0 ) {
       this.hasta = this.desde + this.registosPagina;
     } else if ( this.hasta >= this.totalUsuarios ) {
@@ -136,22 +142,37 @@ export class UsuariosComponent implements OnInit, OnDestroy {
         this.usuarioService.eliminarUsuario(usuario)
         .subscribe({
           next: (resp) => {
+            this.totalUsuarios-=1;
+            this.totalUsuariosTemp-=1;
+            this.calcularHasta();
             this.cargarUsuarios();
-            Swal.fire('Eliminado!', `El usuario ${usuario.nombre} se ha elimiando correctamente.`,'success');
+            Swal.fire({ toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000,
+              title: 'Eliminado!',
+              text: `Usuario: ${usuario.nombre}, eliminado correctamente.`,
+              icon: 'success', });
           },
           error: (error) => {
             Swal.fire('Error', error.error.msg, 'error');
           }
         });
       }
-    })
+    });
   }
 
   cambiarRol(usuario :Usuario) {
     this.usuarioService.actualizarUsuario(usuario)
       .subscribe({
         next: (resp) => {
-          Swal.fire({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, title: 'Actualizado!', text: `El usuario ${usuario.nombre} se ha actualizado correctamente.`, icon: 'success', });
+          Swal.fire({ toast: true,
+                      position: 'top-end',
+                      showConfirmButton: false,
+                      timer: 3000,
+                      title: 'Actualizado!',
+                      text: `El usuario ${usuario.nombre} se ha actualizado correctamente.`,
+                      icon: 'success', });
         },
         error: (error) => {
           Swal.fire('Error', error.error.msg, 'error');

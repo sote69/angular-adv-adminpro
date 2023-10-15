@@ -38,4 +38,41 @@ export class HospitalesService {
         })
       )
   }
+
+  public crearHospital( nombre :string ) {
+
+    return this.httpClient.post<Hospital>(`${this.base_url}/hospitales`, {nombre}, this.headers)
+      .pipe(
+        map( (resp :any) => {
+          const hospital = new Hospital(resp.hospital.nombre, resp.hospital.img, resp.hospital.usuario, resp.hospital.uid);
+          return { hospital };
+        })
+      );
+  }
+
+  public actualizarHospital( id :string, nombre :string ) {
+
+    return this.httpClient.put<Hospital>(`${this.base_url}/hospitales/${ id }`, {nombre}, this.headers);
+      // .pipe(
+      //   map( resp => {
+      //     const hospitales = resp.hospitales.map(
+      //       hospital => new Hospital(hospital.nombre, hospital.img, hospital.usuario, hospital.uid)
+      //     );
+      //     return { total: resp.total, hospitales };
+      //   })
+      // )
+  }
+
+  public eliminarHospital( id :string ) {
+
+    return this.httpClient.delete(`${this.base_url}/hospitales/${ id }`, this.headers);
+      // .pipe(
+      //   map( resp => {
+      //     const hospitales = resp.hospitales.map(
+      //       hospital => new Hospital(hospital.nombre, hospital.img, hospital.usuario, hospital.uid)
+      //     );
+      //     return { total: resp.total, hospitales };
+      //   })
+      // )
+  }
 }

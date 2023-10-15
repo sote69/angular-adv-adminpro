@@ -46,8 +46,6 @@ export class ModalImagenComponent {
     reader.onloadend = () => {
       this.imgTemp = reader.result;
     };
-
-    console.log(this.imgSeleccionada);
   }
 
   subirImagen() {

@@ -1,5 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Subscription, delay } from 'rxjs';
 import { Hospital } from 'src/app/models/hospital.model';
 import { BusquedasService } from 'src/app/services/busquedas.service';
 import { HospitalesService } from 'src/app/services/hospitales.service';
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
   styles: [
   ]
 })
-export class HospitalesComponent implements OnInit {
+export class HospitalesComponent implements OnInit, OnDestroy {
   private hospitalesService = inject(HospitalesService);
   private busquedasService = inject(BusquedasService);
   private modalImagenService = inject(ModalImagenService);
@@ -30,6 +30,22 @@ export class HospitalesComponent implements OnInit {
 
   ngOnInit() {
     this.cargarHospitales();
+
+    // * Al actualizar la imagen de un usuario vuelve a consultar los usuarios
+    this.imgSubs = this.modalImagenService.imagenActualizada
+      .pipe(
+        // * Ponemos un delay de 100 milesimas por si no da tiempo a cargar la nueva imagen
+        delay(100)
+      )
+      .subscribe(img => this.cargarHospitales());
+  }
+
+  ngOnDestroy(): void {
+    this.imgSubs.unsubscribe();
+  }
+
+  abrirModal(hospital :Hospital) {
+    this.modalImagenService.abrirModal('hospitales', hospital.uid!, hospital.img);
   }
 
   cambiarRegistrosPorPagina(valor :string) {
@@ -52,7 +68,13 @@ export class HospitalesComponent implements OnInit {
   }
 
   calcularHasta() {
+
+    if (this.desde >= this.totalHospitales) {
+      this.desde -= this.registosPagina;
+    }
+
     this.hasta = this.desde + this.registosPagina;
+
     if ( this.hasta < 0 ) {
       this.hasta = this.desde + this.registosPagina;
     } else if ( this.hasta >= this.totalHospitales ) {
@@ -65,8 +87,8 @@ export class HospitalesComponent implements OnInit {
     this.hospitalesService.cargarHospitales(this.desde, this.registosPagina)
       .subscribe({
         next: (resp) => {
-          this.hospitales = resp.hospitales;
-          this.hospitalesTemp= resp.hospitales;
+          this.hospitales = [...resp.hospitales];
+          this.hospitalesTemp = [...resp.hospitales];
           this.totalHospitales = resp.total;
           this.totalHospitalesTemp = resp.total;
           this.calcularHasta();
@@ -76,5 +98,92 @@ export class HospitalesComponent implements OnInit {
           Swal.fire('Error', error.error.msg, 'error');
         }
     });
+  }
+
+  actualizarHospital(hospital :Hospital) {
+    this.hospitalesService.actualizarHospital(hospital.uid!, hospital.nombre)
+    .subscribe({
+      next: (resp) => {
+        Swal.fire({ toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    title: 'Actualizado!',
+                    text: `Hospital actualizado correctamente.`,
+                    icon: 'success', });
+      },
+      error: (error) => {
+        Swal.fire('Error', error.error.msg, 'error');
+      }
+    });
+  }
+
+  eliminarHospital(hospital :Hospital) {
+    return Swal.fire({
+      title: '¿Eliminar hospital?',
+      text: `Está a punto de eliminar el hospital ${ hospital.nombre }`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, eliminar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.hospitalesService.eliminarHospital(hospital.uid!)
+        .subscribe({
+          next: (resp) => {
+            this.totalHospitales-=1;
+            this.totalHospitalesTemp-=1;
+            this.calcularHasta();
+            this.cargarHospitales();
+            Swal.fire({ toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        title: 'Eliminado!',
+                        text: `Hospital: ${hospital.nombre}, eliminado correctamente.`,
+                        icon: 'success', });
+          },
+          error: (error) => {
+            Swal.fire('Error', error.error.msg, 'error');
+          }
+        });
+      }
+    });
+  }
+
+  async crearHospital() {
+    const { value } = await Swal.fire<string>({
+      input: 'text',
+      title: 'Crear hospital',
+      inputPlaceholder: 'Nombre del hospital',
+      showCancelButton: true,
+    })
+
+    if (value && value?.length > 0) {
+      this.hospitalesService.crearHospital(value)
+      .subscribe({
+        next: (resp) => {
+          // * Agregamos el nuevo hospital al array en vez de volver a consultar, solo si no estamos en el total de registros por página
+          if (this.registosPagina > this.hospitales.length) {
+            this.hospitales.push(resp.hospital);
+          }
+
+          this.totalHospitales+=1;
+          this.totalHospitalesTemp+=1;
+
+          Swal.fire({ toast: true,
+                      position: 'top-end',
+                      showConfirmButton: false,
+                      timer: 3000,
+                      title: 'Creado!',
+                      text: `Hospital: ${value}, creado correctamente.`,
+                      icon: 'success', });
+        },
+        error: (error) => {
+          Swal.fire('Error', error.error.msg, 'error');
+        }
+      });
+    }
   }
 }
