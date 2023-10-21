@@ -29,8 +29,21 @@
   <div class="col-12">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Desde: {{ desde + 1 }} hasta: {{ hasta }} de ({{ totalMedicos }}) usuarios</h4>
-            <h6 class="card-subtitle">Usuarios registrados en la aplicación.</h6>
+            <div class="row">
+              <div class="col-8">
+                <h4 class="card-title">Desde: {{ desde + 1 }} hasta: {{ hasta }} de ({{ totalMedicos }}) usuarios</h4>
+              <h6 class="card-subtitle">Usuarios registrados en la aplicación.</h6>
+              </div>
+              <div class="col">
+                <div class="text-right">
+                  <a routerLink="/dashboard/medico/nuevo" class="btn btn-primary">
+                    <i class="fa fa-hospital-o"></i>
+                    Crear médico
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>
