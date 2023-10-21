@@ -4,6 +4,10 @@ import { delay, map } from 'rxjs';
 import { Usuario } from '../models/usuario.model';
 import { CargarUsuario } from '../interfaces/cargar-usuarios.interface';
 import { environment } from 'src/environments/environment';
+import { CargarHospital } from '../interfaces/cargar-hospitales.interface';
+import { Hospital } from '../models/hospital.model';
+import { CargarMedico } from '../interfaces/cargar-medicos.interface';
+import { Medico } from '../models/medico.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +33,13 @@ export class BusquedasService {
         map((resp :any) => {
           switch(tipo) {
             case 'usuarios':
-              return this.transformarResultados(resp.resultado);
+              return this.transformarUsuarios(resp.resultado);
+            break;
+            case 'hospitales':
+              return this.transformarHospitales(resp.resultado);
+            break;
+            case 'medicos':
+              return this.transformarMedicos(resp.resultado);
             break;
             default:
               return resp.resultado;
@@ -39,10 +49,24 @@ export class BusquedasService {
       );
   }
 
-  transformarResultados(resultados :any[]) :CargarUsuario {
+  transformarUsuarios(resultados :any[]) :CargarUsuario {
     const usuarios = resultados.map(
       (user :any) => new Usuario(user.nombre, user.email, user.img, user.uid, user.rol, user.google)
     );
     return { total: usuarios.length, usuarios };
+  }
+
+  transformarHospitales(resultados :any[]) :CargarHospital {
+    const hospitales = resultados.map(
+      (hosp :any) => new Hospital(hosp.nombre, hosp.img, hosp.usuario, hosp.uid)
+    );
+    return { total: hospitales.length, hospitales };
+  }
+
+  transformarMedicos(resultados :any[]) :CargarMedico {
+    const medicos = resultados.map(
+      (med :any) => new Medico(med.nombre, med.img, med.hospital, med.usuario, med.uid)
+    );
+    return { total: medicos.length, medicos };
   }
 }

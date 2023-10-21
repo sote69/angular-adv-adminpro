@@ -111,7 +111,7 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     if (termino.length >= 3) {
     this.busquedasService.buscar(termino, 'usuarios', this.desde, this.registosPagina)
       .subscribe({
-        next: (resp :any) => {
+        next: (resp :CargarUsuario) => {
           this.usuarios = resp.usuarios;
           this.totalUsuarios = resp.total;
         },

@@ -5,7 +5,11 @@
   <div class="col-12">
       <div class="card">
           <div class="card-body">
-            <input type="text" class="form-control" placeholder="Buscar hospital...">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Buscar hospital..."
+                   #terminoBusqueda
+                   (keyup)="buscar(terminoBusqueda.value)">
           </div>
       </div>
   </div>

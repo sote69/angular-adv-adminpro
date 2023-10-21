@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription, delay } from 'rxjs';
+import { CargarHospital } from 'src/app/interfaces/cargar-hospitales.interface';
 import { Hospital } from 'src/app/models/hospital.model';
 import { BusquedasService } from 'src/app/services/busquedas.service';
 import { HospitalesService } from 'src/app/services/hospitales.service';
@@ -121,7 +122,7 @@ export class HospitalesComponent implements OnInit, OnDestroy {
   eliminarHospital(hospital :Hospital) {
     return Swal.fire({
       title: '¿Eliminar hospital?',
-      text: `Está a punto de eliminar el hospital ${ hospital.nombre }`,
+      text: `Está a punto de eliminar el hospital: ${ hospital.nombre }`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -141,7 +142,7 @@ export class HospitalesComponent implements OnInit, OnDestroy {
                         showConfirmButton: false,
                         timer: 3000,
                         title: 'Eliminado!',
-                        text: `Hospital: ${hospital.nombre}, eliminado correctamente.`,
+                        text: `Hospital: ${ hospital.nombre }, eliminado correctamente.`,
                         icon: 'success', });
           },
           error: (error) => {
@@ -181,6 +182,27 @@ export class HospitalesComponent implements OnInit, OnDestroy {
                       icon: 'success', });
         },
         error: (error) => {
+          Swal.fire('Error', error.error.msg, 'error');
+        }
+      });
+    }
+  }
+
+  buscar(termino :string) {
+    if (termino.length === 0) {
+      this.hospitales = this.hospitalesTemp;
+      this.totalHospitales = this.totalHospitalesTemp;
+      return;
+    }
+
+    if (termino.length >= 3) {
+    this.busquedasService.buscar(termino, 'hospitales', this.desde, this.registosPagina)
+      .subscribe({
+        next: (resp :CargarHospital) => {
+          this.hospitales = resp.hospitales;
+          this.totalHospitales = resp.total;
+        },
+        error: error => {
           Swal.fire('Error', error.error.msg, 'error');
         }
       });
