@@ -25,6 +25,20 @@ export class HospitalesService {
     return { headers: { "Authorization": `Bearer ${ this.token }` } };
   }
 
+  public cargarTodosHospitales() {
+
+    return this.httpClient.get<CargarHospital>(`${this.base_url}/hospitales/all`, this.headers)
+      .pipe(
+        //delay(150),
+        map( resp => {
+          const hospitales = resp.hospitales.map(
+            hospital => new Hospital(hospital.nombre, hospital.img, undefined, hospital.uid)
+          );
+          return { total: hospitales.length, hospitales };
+        })
+      )
+  }
+
   public cargarHospitales( desde :number = 0, numRegistros :number = 5 ) {
 
     return this.httpClient.get<CargarHospital>(`${this.base_url}/hospitales?desde=${ desde }&numreg=${ numRegistros }`, this.headers)
@@ -53,26 +67,10 @@ export class HospitalesService {
   public actualizarHospital( id :string, nombre :string ) {
 
     return this.httpClient.put<Hospital>(`${this.base_url}/hospitales/${ id }`, {nombre}, this.headers);
-      // .pipe(
-      //   map( resp => {
-      //     const hospitales = resp.hospitales.map(
-      //       hospital => new Hospital(hospital.nombre, hospital.img, hospital.usuario, hospital.uid)
-      //     );
-      //     return { total: resp.total, hospitales };
-      //   })
-      // )
   }
 
   public eliminarHospital( id :string ) {
 
     return this.httpClient.delete(`${this.base_url}/hospitales/${ id }`, this.headers);
-      // .pipe(
-      //   map( resp => {
-      //     const hospitales = resp.hospitales.map(
-      //       hospital => new Hospital(hospital.nombre, hospital.img, hospital.usuario, hospital.uid)
-      //     );
-      //     return { total: resp.total, hospitales };
-      //   })
-      // )
   }
 }

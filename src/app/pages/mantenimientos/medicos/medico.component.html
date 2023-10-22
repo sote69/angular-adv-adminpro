@@ -3,46 +3,57 @@
     <div class="card">
         <div class="card-body">
             <h4 class="card-title">Médico</h4>
-            <h6 class="card-subtitle">Actualizar informacin</h6>
-            <form class="form p-t-20">
+            <h6 class="card-subtitle">Actualizar información</h6>
+            <form class="form p-t-20" [formGroup]="medicoForm" (submit)="guardarMedico()">
+
+                <div class="form-group" *ngIf="medicoSeleccionado">
+                    <label for="exampleInputuname">Foto</label>
+                    <div class="input-group">
+                        <img [src]="medicoSeleccionado.img |imagen :'medicos'" class="w-200">
+                    </div>
+                </div>
                 <div class="form-group">
                     <label for="exampleInputuname">Nombre</label>
                     <div class="input-group">
                         <div class="input-group-addon"><i class="ti-user"></i></div>
-                        <input type="text" class="form-control" id="exampleInputuname" placeholder="Nombre del médico">
+                        <input type="text"
+                               class="form-control"
+                               id="exampleInputuname"
+                               placeholder="Nombre del médico"
+                               formControlName="nombre">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
+                    <label for="exampleInputEmail1">Hospital</label>
                     <div class="input-group">
-                        <div class="input-group-addon"><i class="ti-email"></i></div>
-                        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+                        <div class="input-group-addon"><i class="ti-home"></i></div>
+                        <select formControlName="hospital">
+                            <option value="">Selecciona un hospital</option>
+                            <option *ngFor="let hospital of hospitales"
+                                    [value]="hospital.uid">{{hospital.nombre}}</option>
+                        </select>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="pwd1">Password</label>
-                    <div class="input-group">
-                        <div class="input-group-addon"><i class="ti-lock"></i></div>
-                        <input type="password" class="form-control" id="pwd1" placeholder="Enter email">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="pwd2">Confirm Password</label>
-                    <div class="input-group">
-                        <div class="input-group-addon"><i class="ti-lock"></i></div>
-                        <input type="password" class="form-control" id="pwd2" placeholder="Enter email">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="checkbox checkbox-success">
-                        <input id="checkbox1" type="checkbox">
-                        <label for="checkbox1"> Remember me </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-success waves-effect waves-light m-r-10">Submit</button>
-                <button type="submit" class="btn btn-inverse waves-effect waves-light">Cancel</button>
+                <button type="submit" class="btn btn-success waves-effect waves-light m-r-10" [disabled]="medicoForm.invalid">
+                    <i class="fa fa-save"></i>
+                    Guardar cambios
+                </button>
             </form>
         </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 animated fadeIn fast" *ngIf="hospitalSeleccionado">
+    <div class="card">
+      <div class="card-body">
+          <h4 class="card-title">Hospital</h4>
+          <h6 class="card-subtitle">{{hospitalSeleccionado.nombre}}</h6>
+          <div class="form-group">
+            <div class="input-group">
+                <img [src]="hospitalSeleccionado.img |imagen :'hospitales'" class="img-thumbnail">
+            </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

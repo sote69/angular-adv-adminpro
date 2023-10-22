@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Medico } from '../models/medico.model';
 import { CargarMedico } from '../interfaces/cargar-medicos.interface';
 import { environment } from 'src/environments/environment';
@@ -35,7 +35,28 @@ export class MedicoService {
       )
   }
 
+  public obtenerMedicoPorId(id :string)  {
+    return this.httpClient.get<Medico>(`${ this.base_url }/medicos/${ id }`, this.headers)
+      .pipe(
+        map((resp :any) => resp.medico)
+      );
+  }
+
   public eliminarMedico( id :string ) {
-    return this.httpClient.delete<CargarMedico>(`${this.base_url}/medicos/desde=${ id }`, this.headers);
+    return this.httpClient.delete(`${this.base_url}/medicos/${ id }`, this.headers);
+  }
+
+  public crearMedico(medico :{ nombre :string, hospital :string }) {
+    return this.httpClient.post<Medico>(`${this.base_url}/medicos`, medico, this.headers)
+      .pipe(
+        map((resp :any) => resp.medico)
+      );
+  }
+
+  public actualizarMedico(medico :{ nombre :string, hospital :string, id :string }) {
+    return this.httpClient.put<Medico>(`${this.base_url}/medicos/${ medico.id }`, medico, this.headers)
+      .pipe(
+        map((resp :any) => resp.medico)
+      );
   }
 }

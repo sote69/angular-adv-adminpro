@@ -68,6 +68,21 @@ export class UsuariosComponent implements OnInit, OnDestroy {
     this.cargarUsuarios();
   }
 
+  calcularHasta() {
+
+    if (this.desde >= this.totalUsuarios) {
+      this.desde -= this.registosPagina;
+    }
+
+    this.hasta = this.desde + this.registosPagina;
+
+    if ( this.hasta < 0 ) {
+      this.hasta = this.desde + this.registosPagina;
+    } else if ( this.hasta >= this.totalUsuarios ) {
+      this.hasta = this.totalUsuarios;
+    }
+  }
+
   cargarUsuarios() {
     this.cargando = true;
     this.usuarioService.cargarUsuarios(this.desde, this.registosPagina)
@@ -84,21 +99,6 @@ export class UsuariosComponent implements OnInit, OnDestroy {
           Swal.fire('Error', error.error.msg, 'error');
         }
     });
-  }
-
-  calcularHasta() {
-
-    if (this.desde >= this.totalUsuarios) {
-      this.desde -= this.registosPagina;
-    }
-
-    this.hasta = this.desde + this.registosPagina;
-
-    if ( this.hasta < 0 ) {
-      this.hasta = this.desde + this.registosPagina;
-    } else if ( this.hasta >= this.totalUsuarios ) {
-      this.hasta = this.totalUsuarios;
-    }
   }
 
   buscar(termino :string) {

@@ -1,16 +1,15 @@
 import { environment } from "src/environments/environment";
-import { Hospital } from './hospital.model';
 
 const baseUrl = environment.base_url;
 
 interface _MedicoUsr {
-  id :string,
+  _id :string,
   nombre :string,
   img :string
 }
 
 interface _MedicoHosp {
-  id :string,
+  _id :string,
   nombre :string,
   img :string
 }
