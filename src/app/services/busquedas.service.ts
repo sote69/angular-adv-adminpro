@@ -69,4 +69,27 @@ export class BusquedasService {
     );
     return { total: medicos.length, medicos };
   }
+
+  busquedaGlobal(termino :string) {
+    return this.httpClient.get<any[]>(`${this.base_url}/todo/${ termino }`, this.headers);
+      // .pipe(
+      //   delay(150),
+      //   map((resp :any) => {
+      //     switch(tipo) {
+      //       case 'usuarios':
+      //         return this.transformarUsuarios(resp.resultado);
+      //       break;
+      //       case 'hospitales':
+      //         return this.transformarHospitales(resp.resultado);
+      //       break;
+      //       case 'medicos':
+      //         return this.transformarMedicos(resp.resultado);
+      //       break;
+      //       default:
+      //         return resp.resultado;
+      //         break;
+      //     }
+      //   }),
+      // );
+  }
 }

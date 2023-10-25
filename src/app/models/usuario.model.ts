@@ -8,14 +8,14 @@ export class Usuario {
   email :string ;
   img :string;
   uid? :string;
-  rol? :string;
+  rol? :'ADMIN_ROL' | 'USER_ROL';
   google? :boolean;
 
   constructor(nombre :string,
               email :string ,
               img :string,
               uid? :string,
-              rol? :string,
+              rol? :'ADMIN_ROL' | 'USER_ROL',
               google? :boolean)
   {
     this.nombre = nombre;

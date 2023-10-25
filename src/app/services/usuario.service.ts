@@ -32,8 +32,8 @@ export class UsuarioService {
     return this.usuario()?.uid || '';
   }
 
-  get rol() :string {
-    return this.usuario()?.rol || '';
+  get rol() :'ADMIN_ROL' | 'USER_ROL' {
+    return this.usuario()?.rol || 'USER_ROL';
   }
 
   get headers() {
@@ -44,7 +44,7 @@ export class UsuarioService {
     return this.httpClient.post(`${this.base_url}/usuarios`, formData)
     .pipe(
       tap( (resp :any) => {
-        localStorage.setItem('token', resp.token);
+        this.grabarLocalStorage(resp.token, resp.menu);
       })
     );
   }
@@ -64,7 +64,7 @@ export class UsuarioService {
     return this.httpClient.post(`${this.base_url}/login`, formData)
       .pipe(
         tap( (resp :any) => {
-          localStorage.setItem('token', resp.token);
+          this.grabarLocalStorage(resp.token, resp.menu);
         })
       );
   }
@@ -103,7 +103,7 @@ export class UsuarioService {
     return this.httpClient.post(`${this.base_url}/login/google`, { token })
       .pipe(
         tap( (resp :any) => {
-          localStorage.setItem('token', resp.token);
+          this.grabarLocalStorage(resp.token, resp.menu);
         })
       );
   }
@@ -116,7 +116,7 @@ export class UsuarioService {
         map( (resp :any) => {
           const { nombre, email, img, uid, rol, google } = resp.usuario;
           this.usuario.set(new Usuario(nombre, email, img, uid, rol, google));
-          localStorage.setItem('token', resp.token);
+          this.grabarLocalStorage(resp.token, resp.menu);
           return true;
         }),
         catchError((error) => {
@@ -126,8 +126,14 @@ export class UsuarioService {
       );
   }
 
+  private grabarLocalStorage(token :string, menu :any) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('menu', JSON.stringify(menu));
+  }
+
   public logOut() {
     localStorage.removeItem('token');
+    localStorage.removeItem('menu');
 
     if (this.usuario()?.google) {
       google.accounts.id.revoke(this.usuario()?.email, () => {
