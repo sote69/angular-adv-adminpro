@@ -1,7 +1,8 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # Compiled output
-/dist
+# Subimos la carpeta dist para desplegar en render.com
+# /dist
 /tmp
 /out-tsc
 /bazel-out
