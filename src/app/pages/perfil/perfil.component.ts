@@ -30,7 +30,13 @@ export class PerfilComponent implements OnInit {
     this.usuarioService.actualizarPerfil(this.perfilForm.value)
       .subscribe({
         next: (resp) => {
-          Swal.fire('Guardado', 'Los cambios han sido grabados correctamente', 'success');
+          Swal.fire({ toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            title: 'Actualizado!',
+            text: `Los cambios han sido grabados correctamente.`,
+            icon: 'success', });
         },
         error: (err) => {
           Swal.fire('Error', err.error.msg, 'error');
@@ -60,7 +66,13 @@ export class PerfilComponent implements OnInit {
       .actualizarImagen(this.imagenASubir!, 'usuarios', this.usuario().uid!)
       .then(imagen => {
         this.usuarioService.usuario()!.img = imagen;
-        Swal.fire('Guardado', 'La imagen se actualizó correctamente', 'success');
+        Swal.fire({ toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          title: 'Actualizado!',
+          text: `La imagen se actualizó correctamente.`,
+          icon: 'success', });
       })
       .catch(err => {
         Swal.fire('Error', err.error.msg, 'error');

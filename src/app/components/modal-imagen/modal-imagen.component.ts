@@ -59,7 +59,13 @@ export class ModalImagenComponent {
         this.modalImagenService.imagenActualizada.emit(imagen);
         this.cerrarModal();
         this.imgSeleccionada = null;
-        Swal.fire('Guardado', 'La imagen se actualizó correctamente', 'success');
+        Swal.fire({ toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          title: 'Actualizado!',
+          text: `La imagen se actualizó correctamente.`,
+          icon: 'success', });
       })
       .catch(err => {
         Swal.fire('Error', err.error.msg, 'error');

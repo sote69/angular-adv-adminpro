@@ -17,17 +17,18 @@ export class HospitalesService {
   private router = inject(Router);
   private base_url = environment.base_url;
 
-  get token() :string {
-    return localStorage.getItem('token') || '';
-  }
+  // Estos dos metodos se pasan al http-interceptor.service
+  // get token() :string {
+  //   return localStorage.getItem('token') || '';
+  // }
 
-  get headers() {
-    return { headers: { "Authorization": `Bearer ${ this.token }` } };
-  }
+  // get headers() {
+  //   return { headers: { "Authorization": `Bearer ${ this.token }` } };
+  // }
 
   public cargarTodosHospitales() {
 
-    return this.httpClient.get<CargarHospital>(`${this.base_url}/hospitales/all`, this.headers)
+    return this.httpClient.get<CargarHospital>(`${this.base_url}/hospitales/all`/* , this.headers */)
       .pipe(
         //delay(150),
         map( resp => {
@@ -41,7 +42,7 @@ export class HospitalesService {
 
   public cargarHospitales( desde :number = 0, numRegistros :number = 5 ) {
 
-    return this.httpClient.get<CargarHospital>(`${this.base_url}/hospitales?desde=${ desde }&numreg=${ numRegistros }`, this.headers)
+    return this.httpClient.get<CargarHospital>(`${this.base_url}/hospitales?desde=${ desde }&numreg=${ numRegistros }`/* , this.headers */)
       .pipe(
         //delay(150),
         map( resp => {
@@ -55,7 +56,7 @@ export class HospitalesService {
 
   public crearHospital( nombre :string ) {
 
-    return this.httpClient.post<Hospital>(`${this.base_url}/hospitales`, {nombre}, this.headers)
+    return this.httpClient.post<Hospital>(`${this.base_url}/hospitales`, {nombre}/* , this.headers */)
       .pipe(
         map( (resp :any) => {
           const hospital = new Hospital(resp.hospital.nombre, resp.hospital.img, resp.hospital.usuario, resp.hospital.uid);
@@ -66,11 +67,11 @@ export class HospitalesService {
 
   public actualizarHospital( id :string, nombre :string ) {
 
-    return this.httpClient.put<Hospital>(`${this.base_url}/hospitales/${ id }`, {nombre}, this.headers);
+    return this.httpClient.put<Hospital>(`${this.base_url}/hospitales/${ id }`, {nombre}/* , this.headers */);
   }
 
   public eliminarHospital( id :string ) {
 
-    return this.httpClient.delete(`${this.base_url}/hospitales/${ id }`, this.headers);
+    return this.httpClient.delete(`${this.base_url}/hospitales/${ id }`/* , this.headers */);
   }
 }

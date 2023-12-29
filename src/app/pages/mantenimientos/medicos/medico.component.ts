@@ -86,7 +86,7 @@ export class MedicoComponent implements OnInit {
                         showConfirmButton: false,
                         timer: 3000,
                         title: 'Creado!',
-                        text: `El médico: ${this.medicoForm?.get('nombre')!.value} se ha creado correctamente.`,
+                        text: `El médico: ${this.medicoForm?.get('nombre')!.value} se ha actualizado correctamente.`,
                         icon: 'success', });
             this.router.navigateByUrl(`/dashboard/medico/${resp.uid}`);
           },

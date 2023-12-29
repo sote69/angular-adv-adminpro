@@ -19,7 +19,9 @@ import { NopagefoundComponent } from './nopagefound/nopagefound.component';
     PagesModule,
     AuthModule
   ],
-  providers: [],
+  providers: [
+
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -17,17 +17,18 @@ export class BusquedasService {
   private httpClient = inject(HttpClient);
   private base_url = environment.base_url;
 
-  get token() :string {
-    return localStorage.getItem('token') || '';
-  }
+  // Estos dos metodos se pasan al http-interceptor.service
+  // get token() :string {
+  //   return localStorage.getItem('token') || '';
+  // }
 
-  get headers() {
-    return { headers: { "Authorization": `Bearer ${ this.token }` } };
-  }
+  // get headers() {
+  //   return { headers: { "Authorization": `Bearer ${ this.token }` } };
+  // }
 
   public buscar( termino :string, tipo : 'usuarios' | 'medicos' | 'hospitales', desde :number = 0, numRegistros :number = 5 ) {
 
-    return this.httpClient.get<any[]>(`${this.base_url}/todo/coleccion/${ tipo }/${ termino }?desde=${ desde }&numreg=${ numRegistros }`, this.headers)
+    return this.httpClient.get<any[]>(`${this.base_url}/todo/coleccion/${ tipo }/${ termino }?desde=${ desde }&numreg=${ numRegistros }`/* , this.headers */)
       .pipe(
         delay(150),
         map((resp :any) => {
@@ -71,7 +72,7 @@ export class BusquedasService {
   }
 
   busquedaGlobal(termino :string) {
-    return this.httpClient.get<any[]>(`${this.base_url}/todo/${ termino }`, this.headers);
+    return this.httpClient.get<any[]>(`${this.base_url}/todo/${ termino }`/* , this.headers */);
       // .pipe(
       //   delay(150),
       //   map((resp :any) => {
