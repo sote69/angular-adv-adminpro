@@ -10,11 +10,9 @@ export class HttpInterceptorService implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler) :Observable<any> {
 
-    console.log('Pasamos por el interceptor....');
-    console.log(req.url);
-
+    // console.log('Pasamos por el interceptor....');
+    // console.log(req.url);
     const cloneRequest = req.clone({ headers: this.headers });
-
     return next.handle(cloneRequest).pipe(
       // catchError(this.manejarError)
     );
